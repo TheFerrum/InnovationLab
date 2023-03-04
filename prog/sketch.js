@@ -88,3 +88,31 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => console.error(error));
     });
 });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    _("#send-img").addEventListener("click", function () {
+        let fileInput = _("#image-input");
+        let file = fileInput.files[0];
+        
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+            let image_data = reader.result;
+            
+            fetch('http://localhost:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({image: image_data})
+            })
+            .then(response => response.json())
+            .then(data => {
+                let prediction = data.prediction;
+                _(".result h1").innerHTML = `Your prediction is: ${prediction}`;
+            })
+            .catch(error => console.error(error));
+        };
+    });
+});
